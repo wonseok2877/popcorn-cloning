@@ -19,7 +19,7 @@ import Header from "./components/header";
  */
 
 const Router = () => (
-  <BrowserRouter basename="https://wonderful-spence-5a55a7.netlify.app">
+  <BrowserRouter>
     <Header />
     <Switch>
       <Route exact path="/" component={MoviePage} />
