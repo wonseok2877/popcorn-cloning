@@ -2,6 +2,7 @@ import React from "react";
 import InfoContextProvider from "./context/InfoContext";
 import Router from "./Router";
 import "./styles/style.css";
+import "./styles/custom.css";
 
 /* App function
 pure function이다. 다른 component함수들을 자식으로써 호출하고,

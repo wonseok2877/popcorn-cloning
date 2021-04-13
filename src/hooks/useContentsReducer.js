@@ -1,6 +1,6 @@
 import { useReducer } from "react";
 
-const initialState = { currentType: "", page: 1, results: null };
+const initialState = { sortType: "", page: 1, results: null };
 
 const useContentsReducer = () => {
   /* 로직
@@ -14,7 +14,7 @@ const useContentsReducer = () => {
   밑의 switch문은 실행되지 않는다. 
   
   ? : 더 좋은 방법은 없을까?
-  ? : switch문을 잘 모르니까 헷갈린다.
+  ? : switch문 잘 모름.
   ? : 애초에 useReducer에 대한 이해가 부족하다. reducer은 그냥 함수라는 거.
   또한 return하는 객체는 state가 되고, dispatch로는 action을 보낸다는 것.
   결국 state와 setState인데, 조금 복잡해지니깐 바로 헷갈리는 거.
@@ -22,12 +22,11 @@ const useContentsReducer = () => {
 
   // 함수 정의 : reducer
   const reducer = (state, action) => {
-    console.log(state);
     console.log(action);
     // destructuring
     const { type, page, results } = action;
     // 첫번째 분기 : type이 이전과 같은지 다른지에 따라서.
-    if (type === state.currentType) {
+    if (type === state.sortType) {
       // 두번째 분기 : page가 이전과 같은지 다른지에 따라서.
       if (page === state.page + 1) {
         return {
@@ -46,7 +45,7 @@ const useContentsReducer = () => {
       switch (type) {
         case type:
           return {
-            currentType: type,
+            sortType: type,
             page,
             results,
           };

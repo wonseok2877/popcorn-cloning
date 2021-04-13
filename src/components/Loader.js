@@ -1,3 +1,5 @@
-const Loader = () => <h1 className="text-6xl text-center animate-pulse">⏳</h1>;
+const Loader = () => (
+  <i className="fas fa-spinner text-5xl animate-spin text-white"></i>
+);
 
 export default Loader;

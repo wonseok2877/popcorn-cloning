@@ -1,15 +1,15 @@
 import React from "react";
 import { BrowserRouter, Redirect, Route, Switch } from "react-router-dom";
-import Header from "./components/Header";
-import NavBar from "./components/NavBar";
-import DetailPage from "./pages/DetailPage";
-import HomePage from "./pages/HomePage";
-import MoviePage from "./pages/MoviePage";
-import PeoplePage from "./pages/PeoplePage";
-import PersonPage from "./pages/PersonPage";
-import SearchPage from "./pages/SearchPage";
-import TVPage from "./pages/TVPage";
-import userPage from "./pages/UserPage";
+import {
+  DetailPage,
+  MoviePage,
+  PeoplePage,
+  TVPage,
+  UserPage,
+  SearchPage,
+  PersonPage,
+} from "./pages";
+import Header from "./components/header";
 
 /* 로직
 1. BrowserRouter : 여러 페이지를 쓰기 위한 함수.
@@ -21,17 +21,15 @@ import userPage from "./pages/UserPage";
 const Router = () => (
   <BrowserRouter>
     <Header />
-    <NavBar />
     <Switch>
-      <Route exact path="/" component={HomePage} />
-      <Route exact path="/movie" component={MoviePage} />
+      <Route exact path="/" component={MoviePage} />
       <Route exact path="/movie/:id" component={DetailPage} />
       <Route exact path="/tv" component={TVPage} />
       <Route exact path="/tv/:id" component={DetailPage} />
       <Route exact path="/search/:term" component={SearchPage} />
       <Route exact path="/people" component={PeoplePage} />
       <Route exact path="/people/:id" component={PersonPage} />
-      <Route exact path="/user" component={userPage} />
+      <Route exact path="/user" component={UserPage} />
       <Redirect from="/*" to="/" />
     </Switch>
   </BrowserRouter>

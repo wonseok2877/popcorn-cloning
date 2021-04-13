@@ -1,16 +1,21 @@
-import React, { useContext, useEffect, useState } from "react";
-import { useHistory, useLocation, useParams } from "react-router-dom";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import { useLocation, useParams } from "react-router-dom";
 import movieApi from "../apis/movieApi";
 import tvApi from "../apis/tvApi";
-import ContentBox from "../components/ContentBox";
+import ContentBox from "../components/contentBox/ContentBox";
 import ContentsContainer from "../components/ContentsContainer";
-import DetailContainer from "../components/DetailContainer";
-import PageContainer from "../components/PageContainer";
-import TextTitle from "../components/TextTitle";
+import DetailContainer from "../components/detail/DetailContainer";
+import DetailPageContainer from "../components/detail/DetailPageContainer";
+import CarterTitle from "../components/title/CarterTitle";
 import { infoContext } from "../context/InfoContext";
+import Loader from "../components/Loader";
+import saveLocalContentHistory from "../function/saveLocalHistory";
+import FullScreenCenter from "../components/FullScreenCenter";
+import scrollSmooth from "../function/scrollSmooth";
+import { Helmet } from "react-helmet";
 
 const DetailPage = () => {
-  // useParams
+  // reactRouterDom hooks
   const { id } = useParams();
   const { pathname } = useLocation();
   // useState
@@ -22,10 +27,13 @@ const DetailPage = () => {
   // conditional state
   const [isVideoFocused, setIsVideoFocused] = useState(false);
   const [isPulse, setIsPulse] = useState(true);
-  const [currentContent, setCurrentContent] = useState("similar");
+  const [currentContent, setCurrentContent] = useState("SIMILAR");
   const [isCreditSelected, setIsCreditSelected] = useState(false);
   // useContext : 현재 영화인지 티비인지 boolean 값 state
-  const { isMovie, setIsMovie } = useContext(infoContext);
+  const { globalFocus, setGlobalFocus } = useContext(infoContext);
+  // useRef
+  const tagDivRef = useRef();
+
   // useEffect : 마운팅 이후 params의 id를 인식한 단계
   useEffect(() => {
     // 함수 정의 : params의 id에 따라 요청
@@ -34,7 +42,7 @@ const DetailPage = () => {
       try {
         // conditional : location이 tv냐 movie냐에 따라서 setState
         if (pathname.includes("movie")) {
-          // async request : movieApi객체의 method들
+          // request promises : movieApi객체의 method들과 return값들
           const { data } = await movieApi.movieById(id);
           const {
             data: { results },
@@ -42,6 +50,9 @@ const DetailPage = () => {
           const {
             data: { keywords },
           } = await movieApi.keywordsById(id);
+
+          // function call
+          saveLocalContentHistory("movie-history", data);
           // setState
           setDetail(data);
           setKewords(keywords);
@@ -54,8 +65,10 @@ const DetailPage = () => {
           const {
             data: { results: keywords },
           } = await tvApi.keywordsById(id);
+          // function call
+          saveLocalContentHistory("tv-history", data);
           // setState
-          setIsMovie(false);
+          setGlobalFocus("TV_SHOWS");
           setDetail(data);
           setSimilar(results);
           setKewords(keywords);
@@ -65,18 +78,19 @@ const DetailPage = () => {
       } catch (error) {
         console.log(error);
       }
+      // setState initialize
+      setCreditList([]);
+      setIsCreditSelected(false);
     };
     // 함수 호출
     fetchData();
-  }, [id, pathname, isMovie]);
+  }, [id, pathname, globalFocus]);
 
   // useEffect : data fetch된 data를 setState했을 때 side effect.
+  // ! : mounting때의 window scroll은 없다. 그래서 처음엔 scroll이 안됨.
   useEffect(() => {
-    // ! : mounting때의 window scroll은 없다. 그래서 처음엔 scroll이 안됨.
-    window.scroll({
-      top: 168,
-      behavior: "smooth",
-    });
+    // function call
+    scrollSmooth(0);
     // if : detail property가 있는지, 즉 data가 실제로 온 이후에 setTimeOut.
     if (detail.id) {
       // setState
@@ -94,8 +108,7 @@ const DetailPage = () => {
     } = await movieApi.discoverByKeyword(keywordId);
     // setState
     setListByKeyword(results);
-    // if : 현재 similar contents를 띄우는 중인 경우
-    if (currentContent) setCurrentContent(keywordName);
+    setCurrentContent(keywordName);
   };
   const handleVideoClick = () => {
     isVideoFocused ? setIsVideoFocused(false) : setIsVideoFocused(true);
@@ -104,58 +117,75 @@ const DetailPage = () => {
     // if : credit data를 이미 받아온 경우엔 request 안함.
     if (creditList.length === 0) {
       try {
-        if (isMovie) {
+        if (globalFocus === "MOVIE") {
           console.log("function executed.");
           const {
             data: { cast },
           } = await movieApi.credits(id);
-          setCreditList(cast.filter((item, index) => index <= 5));
+          setCreditList(cast.filter((item, index) => index <= 6));
         } else {
           const {
             data: { cast },
           } = await tvApi.credits(id);
-          setCreditList(cast.filter((item, index) => index <= 5));
+          setCreditList(cast.filter((item, index) => index <= 6));
         }
       } catch (error) {
         console.log(error);
       }
     }
-    // if : 온오프
+    // if : boolean
     if (isCreditSelected) setIsCreditSelected(false);
     else setIsCreditSelected(true);
   };
+  const handleTagClick = () => {
+    // function call
+    scrollSmooth(
+      tagDivRef.current?.offsetTop - tagDivRef.current?.scrollHeight
+    );
+  };
   return (
     <>
-      {detail.videos ? (
-        <DetailContainer
-          detail={detail}
-          creditList={creditList}
-          isVideoFocused={isVideoFocused}
-          isCreditSelected={isCreditSelected}
-          handleVideoClick={handleVideoClick}
-          handleCreditClick={handleCreditClick}
-          isPulse={isPulse}
-        />
-      ) : (
-        <h1 className="w-screen h-screen flex justify-center items-center">
-          loading...
-        </h1>
-      )}
-
-      <PageContainer>
-        {keywords?.length > 0 &&
-          keywords.map((k, index) => (
-            <button
-              onClick={() => handleKeywordClick(k.id, k.name)}
-              className="mx-3 text-white"
-              key={index}
-            >
-              <i className="fas fa-hashtag"></i> {k.name}
-            </button>
-          ))}
-        <TextTitle>
-          {currentContent === "similar" ? (
-            isMovie ? (
+      <Helmet>
+        <title>Detail | Popcorn Time</title>
+      </Helmet>
+      <DetailPageContainer>
+        {detail.videos ? (
+          <DetailContainer
+            detail={detail}
+            creditList={creditList}
+            isVideoFocused={isVideoFocused}
+            isCreditSelected={isCreditSelected}
+            isPulse={isPulse}
+            handleVideoClick={handleVideoClick}
+            handleCreditClick={handleCreditClick}
+            handleTagClick={handleTagClick}
+          />
+        ) : (
+          <FullScreenCenter>
+            <Loader />
+          </FullScreenCenter>
+        )}
+        <div ref={tagDivRef} className="flex flex-wrap">
+          <span
+            onClick={() => setCurrentContent("SIMILAR")}
+            className="mx-3 mt-5 p-3 text-xl cursor-pointer text-white bg-gray-300 bg-opacity-30 rounded-full"
+          >
+            similar
+          </span>
+          {keywords?.length > 0 &&
+            keywords.map((k, index) => (
+              <span
+                onClick={() => handleKeywordClick(k.id, k.name)}
+                className="mx-3 mt-5 p-3 text-xl cursor-pointer text-white bg-gray-300 bg-opacity-30 rounded-2xl"
+                key={index}
+              >
+                <i className="fas fa-hashtag"></i> {k.name}
+              </span>
+            ))}
+        </div>
+        <CarterTitle>
+          {currentContent === "SIMILAR" ? (
+            globalFocus === "MOVIE" ? (
               "similar movies"
             ) : (
               "similar shows"
@@ -166,19 +196,29 @@ const DetailPage = () => {
               {currentContent}
             </h1>
           )}
-        </TextTitle>
+        </CarterTitle>
         <ContentsContainer>
-          {currentContent === "similar"
+          {currentContent === "SIMILAR"
             ? similarList.length > 0 &&
-              similarList.map((s, index) => (
-                <ContentBox key={index} content={s} isMovie={isMovie} />
+              similarList.map((item, index) => (
+                <ContentBox
+                  content={item}
+                  contentType={globalFocus}
+                  imageSize={200}
+                  key={index}
+                />
               ))
             : listByKeyword.length > 0 &&
-              listByKeyword.map((l, index) => (
-                <ContentBox key={index} content={l} isMovie={isMovie} />
+              listByKeyword.map((item, index) => (
+                <ContentBox
+                  content={item}
+                  contentType={globalFocus}
+                  imageSize={200}
+                  key={index}
+                />
               ))}
         </ContentsContainer>
-      </PageContainer>
+      </DetailPageContainer>
     </>
   );
 };

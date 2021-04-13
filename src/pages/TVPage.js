@@ -1,10 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
+import { Helmet } from "react-helmet";
 import tvApi from "../apis/tvApi";
-import ContentBox from "../components/ContentBox";
+import ContentBox from "../components/contentBox/ContentBox";
 import ContentsContainer from "../components/ContentsContainer";
+import NavBar from "../components/navbar/NavBar";
 import PageContainer from "../components/PageContainer";
-import TextTitle from "../components/TextTitle";
-import TvSortButton from "../components/TvSortButton";
+import SideBar from "../components/sideBar/SideBar";
 import { infoContext } from "../context/InfoContext";
 import useContentsReducer from "../hooks/useContentsReducer";
 
@@ -17,7 +18,6 @@ const TVPage = () => {
   const { setIsMovie } = useContext(infoContext);
   // useEffect : 마운팅 단계
   useEffect(() => {
-    setIsMovie(false);
     requestAndDispatch.allGenres();
     requestAndDispatch.airingToday(1);
   }, []);
@@ -27,7 +27,7 @@ const TVPage = () => {
     window.addEventListener("scroll", handleScroll);
     // clean up
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [state.currentType, state.page]);
+  }, [state.sortType, state.page]);
   // 변수 정의 : 함수 property 가진 객체
   const requestAndDispatch = {
     allGenres: async () => {
@@ -66,7 +66,7 @@ const TVPage = () => {
         const {
           data: { results },
         } = await tvApi.popular(page);
-        dispatch({ type: "popular", page, results });
+        dispatch({ type: "Popular", page, results });
       } catch (error) {
         console.log(error.message);
       }
@@ -76,7 +76,7 @@ const TVPage = () => {
         const {
           data: { results },
         } = await tvApi.topRated(page);
-        dispatch({ type: "top-rated", page, results });
+        dispatch({ type: "Top-Rated", page, results });
       } catch (error) {
         console.log(error.message);
       }
@@ -90,16 +90,16 @@ const TVPage = () => {
     } else {
       // ? : 여기서 setTimeout함수를 호출하는 것보다 더 좋은 방법이 있을까? 0.1초라도 기다리게 되는게 맘에 안든다.
       const switchByType = () => {
-        switch (state.currentType) {
+        switch (state.sortType) {
           case "airing-today":
             return requestAndDispatch.airingToday(state.page + 1);
-          case "popular":
+          case "Popular":
             return requestAndDispatch.popular(state.page + 1);
-          case "top-rated":
+          case "Top-Rated":
             return requestAndDispatch.topRated(state.page + 1);
           default:
             return requestAndDispatch.discoverByGenre(
-              state.currentType,
+              state.sortType,
               state.page + 1
             );
         }
@@ -109,27 +109,30 @@ const TVPage = () => {
   };
   console.log(state.results);
   return (
-    <PageContainer>
-      <TvSortButton
-        currentType={state.currentType}
-        requestAndDispatch={requestAndDispatch}
-      />
-      {genres?.map((g) => (
-        <button
-          onClick={() => requestAndDispatch.discoverByGenre(g.name)}
-          className="bg-white"
-        >
-          {g.name}
-        </button>
-      ))}
-      <TextTitle>{state.currentType}</TextTitle>
-      <ContentsContainer>
-        {state.results &&
-          state.results.map((t, index) => (
-            <ContentBox content={t} isMovie={false} key={index} />
-          ))}
-      </ContentsContainer>
-    </PageContainer>
+    <>
+      <Helmet>
+        <title>TV | Popcorn Time</title>
+      </Helmet>
+      <NavBar />
+      <PageContainer>
+        <SideBar
+          requestAndDispatch={requestAndDispatch}
+          sortType={state.sortType}
+          genres={genres}
+        />
+        <ContentsContainer>
+          {state.results &&
+            state.results.map((t, index) => (
+              <ContentBox
+                content={t}
+                contentType={"TV_SHOWS"}
+                imageSize={300}
+                key={index}
+              />
+            ))}
+        </ContentsContainer>
+      </PageContainer>
+    </>
   );
 };
 

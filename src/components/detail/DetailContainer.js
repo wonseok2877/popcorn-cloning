@@ -1,13 +1,11 @@
-import React, { useEffect } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import YouTube from "react-youtube";
-
-import TextDate from "./TextDate";
-import TextTitle from "./TextTitle";
-import BlackWhite from "./BlackWhite";
-import TextGenre from "./TextGenre";
-import TextOverview from "./TextOverview";
+import TextDate from "../TextDate";
+import TextGenre from "../TextGenre";
+import TextOverview from "../TextOverview";
 import { Link } from "react-router-dom";
+import CinzelTitle from "../title/CinzelTitle";
 
 const DetailContainer = ({
   detail: {
@@ -32,20 +30,23 @@ const DetailContainer = ({
   isCreditSelected,
   handleVideoClick,
   handleCreditClick,
+  handleTagClick,
   isPulse,
 }) => {
   return (
     <>
-      <BlackWhite>
+      <div className="flex">
         <img
-          className="absolute w-screen z-0 h-full"
           src={`https://image.tmdb.org/t/p/original/${backdrop_path}`}
           alt="backdrop"
+          style={{ height: "92vh" }}
+          className="absolute w-screen"
         />
         <div
-          className={`z-10 text-white bg-black ${
+          className={`z-0 w-full p-8  text-white bg-black ${
             isVideoFocused ? "bg-opacity-90" : "bg-opacity-50 "
-          } w-full p-8 ${isPulse && "animate-pulse"} `}
+          } ${isPulse && "animate-pulse"} `}
+          style={{ height: "92vh" }}
         >
           <div className="flex justify-between items-center">
             <div>
@@ -55,7 +56,7 @@ const DetailContainer = ({
                 rel="noopener noreferrer"
                 title="home page"
               >
-                <TextTitle>{title ? title : name}</TextTitle>
+                <CinzelTitle>{title ? title : name}</CinzelTitle>
               </a>
               <div
                 className={`${
@@ -103,47 +104,63 @@ const DetailContainer = ({
             )}
             <TextOverview>{overview.substring(0, 300)}...</TextOverview>
           </div>
-          <button
-            onClick={handleVideoClick}
-            className="my-10 border-none focus:outline-none"
-          >
-            {isVideoFocused ? (
-              <i className="fas fa-pause absolute z-20 text-7xl animate-pulse"></i>
-            ) : (
-              <i className="fas fa-play absolute z-20 text-7xl"></i>
-            )}
-          </button>
-          <div className="flex justify-center items-center">
+          <div className="h-80 w-24 pt-4 flex flex-col justify-between items-center">
+            <i
+              onClick={handleVideoClick}
+              className={`fas z-20 w-16 h-16  ml-3 text-7xl cursor-pointer ${
+                isVideoFocused ? "fa-pause animate-pulse" : "fa-play"
+              }`}
+              title="trailer"
+            />
             {videos && videos.results.length > 0 && isVideoFocused && (
-              <div className="flex flex-col">
-                <YouTube
-                  videoId={videos.results[0].key}
-                  opts={{ playerVars: { autoplay: 1 } }}
-                  className="w-screen relative z-0"
-                />
-              </div>
+              <YouTube
+                videoId={videos.results[0].key}
+                // React Youtube 라이브러리 props
+                opts={{ playerVars: { autoplay: 1 } }}
+                className="w-full h-screen absolute -top-2 left-0 z-10"
+              />
             )}
-          </div>
-          <button onClick={handleCreditClick}>
-            <i className="fas fa-users text-7xl"></i>
-          </button>
-          {isCreditSelected && creditList && (
-            <div className="flex">
-              {creditList.map((cast, index) => (
-                <Link to={`/people/${cast.id}`} key={index}>
-                  <img
-                    src={`https://image.tmdb.org/t/p/original/${cast.profile_path}`}
-                    alt="profile"
-                    className="w-20 h-20"
-                  />
-                  <span>{cast.character}</span>
-                  <span>{cast.original_name}</span>
-                </Link>
-              ))}
+            <div className="w-full flex justify-between items-center">
+              <i
+                className="fas fa-users text-7xl cursor-pointer"
+                onClick={handleCreditClick}
+                title="credits"
+              />
+              {creditList.length > 0 && (
+                <div
+                  className={`z-0 relative ml-10 mb-7 flex opacity-0 ${
+                    isCreditSelected ? "opacity-100" : ""
+                  } transition-opacity ease-in-out duration-300`}
+                >
+                  {creditList.map((cast, index) => (
+                    <Link
+                      to={`/people/${cast.id}`}
+                      key={index}
+                      className="w-20 h-20 mr-6 "
+                    >
+                      <img
+                        src={`https://image.tmdb.org/t/p/original/${cast.profile_path}`}
+                        alt="profile"
+                        // onLoad event listener
+                        onLoad={(event) => {
+                          event.target.style.opacity = 100;
+                        }}
+                        className={`rounded-md opacity-0 transition-opacity ease-in-out duration-300 `}
+                        title={cast.original_name}
+                      />
+                    </Link>
+                  ))}
+                </div>
+              )}
             </div>
-          )}
+            <i
+              className="fas fa-hashtag text-7xl cursor-pointer"
+              onClick={handleTagClick}
+              title="keywords"
+            ></i>
+          </div>
         </div>
-      </BlackWhite>
+      </div>
     </>
   );
 };

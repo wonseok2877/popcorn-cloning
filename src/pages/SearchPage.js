@@ -2,9 +2,13 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import movieApi from "../apis/movieApi";
 import tvApi from "../apis/tvApi";
-import ContentBox from "../components/ContentBox";
+import CarterTitle from "../components/title/CarterTitle";
+import ContentBox from "../components/contentBox/ContentBox";
 import ContentsContainer from "../components/ContentsContainer";
+import DetailPageContainer from "../components/detail/DetailPageContainer";
+import FullScreenCenter from "../components/FullScreenCenter";
 import Loader from "../components/Loader";
+import { Helmet } from "react-helmet";
 
 const SearchPage = () => {
   //   useState
@@ -40,26 +44,40 @@ const SearchPage = () => {
 
   return (
     <>
+      <Helmet>
+        <title>Search | Popcorn Time</title>
+      </Helmet>
       {loading ? (
-        <Loader />
+        <FullScreenCenter>
+          <Loader />
+        </FullScreenCenter>
       ) : (
-        <>
-          <h1>movie searched</h1>
-
+        <DetailPageContainer>
+          <CarterTitle>movie searched</CarterTitle>
           <ContentsContainer>
             {movieResults.length > 0 &&
               movieResults.map((m, index) => (
-                <ContentBox content={m} isMovie={true} key={index} />
+                <ContentBox
+                  content={m}
+                  contentType={"MOVIE"}
+                  imageSize={300}
+                  key={index}
+                />
               ))}
           </ContentsContainer>
-          <h1>Tv show searched</h1>
+          <CarterTitle>Tv show searched</CarterTitle>
           <ContentsContainer>
             {tvResults.length > 0 &&
               tvResults.map((t, index) => (
-                <ContentBox content={t} isMovie={true} key={index} />
+                <ContentBox
+                  content={t}
+                  contentType={"TV_SHOWS"}
+                  imageSize={300}
+                  key={index}
+                />
               ))}
           </ContentsContainer>
-        </>
+        </DetailPageContainer>
       )}
     </>
   );
