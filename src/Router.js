@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Redirect, Route, Switch } from "react-router-dom";
+import { HashRouter, Redirect, Route, Switch } from "react-router-dom";
 import {
   DetailPage,
   MoviePage,
@@ -19,7 +19,7 @@ import Header from "./components/header";
  */
 
 const Router = () => (
-  <BrowserRouter basename="https://wonderful-spence-5a55a7.netlify.app">
+  <HashRouter>
     <Header />
     <Switch>
       <Route exact path="/" component={MoviePage} />
@@ -32,7 +32,7 @@ const Router = () => (
       <Route exact path="/user" component={UserPage} />
       <Redirect from="/*" to="/" />
     </Switch>
-  </BrowserRouter>
+  </HashRouter>
 );
 
 export default Router;
