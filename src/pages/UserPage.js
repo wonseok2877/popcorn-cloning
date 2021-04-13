@@ -16,29 +16,39 @@ const UserPage = () => {
         <CarterTitle>You watched ... </CarterTitle>
         <CarterTitle>Movies</CarterTitle>
         <ContentsContainer>
-          {movieHistory?.length > 0
-            ? movieHistory.map((item, index) => (
-                <ContentBox
-                  content={item}
-                  contentType={"MOVIE"}
-                  imageSize={200}
-                  key={index}
-                />
-              ))
-            : "you haven't watched."}
+          {movieHistory?.length > 0 ? (
+            movieHistory.map((item, index) => (
+              <ContentBox
+                content={item}
+                contentType={"MOVIE"}
+                imageSize={200}
+                key={index}
+              />
+            ))
+          ) : (
+            <div>
+              <i className="fas fa-grin-beam-sweat text-7xl" />
+              <span className="text-3xl ml-3">No history.</span>
+            </div>
+          )}
         </ContentsContainer>
         <CarterTitle>TV shows</CarterTitle>
         <ContentsContainer>
-          {tvHistory?.length > 0
-            ? tvHistory.map((item, index) => (
-                <ContentBox
-                  content={item}
-                  contentType={"TV_SHOWS"}
-                  imageSize={200}
-                  key={index}
-                />
-              ))
-            : "you haven't watched."}
+          {tvHistory?.length > 0 ? (
+            tvHistory.map((item, index) => (
+              <ContentBox
+                content={item}
+                contentType={"TV_SHOWS"}
+                imageSize={200}
+                key={index}
+              />
+            ))
+          ) : (
+            <div>
+              <i className="fas fa-grin-beam-sweat text-7xl" />
+              <span className="text-3xl ml-3">No history.</span>
+            </div>
+          )}
         </ContentsContainer>
       </DetailPageContainer>
     </>

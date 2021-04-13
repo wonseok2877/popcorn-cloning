@@ -1,5 +1,5 @@
 import React from "react";
-import { HashRouter, Redirect, Route, Switch } from "react-router-dom";
+import { BrowserRouter, Redirect, Route, Switch } from "react-router-dom";
 import {
   DetailPage,
   MoviePage,
@@ -12,14 +12,14 @@ import {
 import Header from "./components/header";
 
 /* 로직
-1. HashRouter : 여러 페이지를 쓰기 위한 함수. github와 netlify용..
+1. BrowserRouter : 여러 페이지를 쓰기 위한 함수.
 2. Switch : uru에 가장 먼저 match되는 하나의 component만 호출한다.
 3. Route : 각 path에 대해 component를 할당한다.
 4. Redirect : 기타등등 path가 들어가면 일단 movie page로 이동. 
  */
 
 const Router = () => (
-  <HashRouter>
+  <BrowserRouter basename="https://wonderful-spence-5a55a7.netlify.com">
     <Header />
     <Switch>
       <Route exact path="/" component={MoviePage} />
@@ -32,7 +32,7 @@ const Router = () => (
       <Route exact path="/user" component={UserPage} />
       <Redirect from="/*" to="/" />
     </Switch>
-  </HashRouter>
+  </BrowserRouter>
 );
 
 export default Router;
