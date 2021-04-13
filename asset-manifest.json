@@ -1,0 +1,20 @@
+{
+  "files": {
+    "main.css": "/popcorn-cloning/static/css/main.ae782cbc.chunk.css",
+    "main.js": "/popcorn-cloning/static/js/main.d2b61183.chunk.js",
+    "main.js.map": "/popcorn-cloning/static/js/main.d2b61183.chunk.js.map",
+    "runtime-main.js": "/popcorn-cloning/static/js/runtime-main.66cf0543.js",
+    "runtime-main.js.map": "/popcorn-cloning/static/js/runtime-main.66cf0543.js.map",
+    "static/js/2.07f72217.chunk.js": "/popcorn-cloning/static/js/2.07f72217.chunk.js",
+    "static/js/2.07f72217.chunk.js.map": "/popcorn-cloning/static/js/2.07f72217.chunk.js.map",
+    "index.html": "/popcorn-cloning/index.html",
+    "static/css/main.ae782cbc.chunk.css.map": "/popcorn-cloning/static/css/main.ae782cbc.chunk.css.map",
+    "static/js/2.07f72217.chunk.js.LICENSE.txt": "/popcorn-cloning/static/js/2.07f72217.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.66cf0543.js",
+    "static/js/2.07f72217.chunk.js",
+    "static/css/main.ae782cbc.chunk.css",
+    "static/js/main.d2b61183.chunk.js"
+  ]
+}
