@@ -98,9 +98,7 @@ const DetailPage = () => {
     }
     return () => setIsPulse(true);
   }, [detail]);
-  console.log("rendered.");
   console.log(detail);
-  console.log(creditList);
   // 함수 정의 : event handler
   const handleKeywordClick = async (keywordId, keywordName) => {
     const {

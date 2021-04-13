@@ -18,6 +18,7 @@ const DetailContainer = ({
     overview,
     videos,
     backdrop_path,
+    imdb_id,
     homepage,
     production_companies,
     tagline,
@@ -51,7 +52,9 @@ const DetailContainer = ({
           <div className="flex justify-between items-center">
             <div>
               <a
-                href={homepage ? homepage : null}
+                href={
+                  imdb_id ? `https://www.imdb.com/title/${imdb_id}` : homepage
+                }
                 target="_blank"
                 rel="noopener noreferrer"
                 title="home page"
