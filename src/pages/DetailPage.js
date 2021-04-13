@@ -84,7 +84,7 @@ const DetailPage = () => {
     };
     // 함수 호출
     fetchData();
-  }, [id, pathname, globalFocus]);
+  }, [id, pathname, globalFocus, setGlobalFocus]);
 
   // useEffect : data fetch된 data를 setState했을 때 side effect.
   // ! : mounting때의 window scroll은 없다. 그래서 처음엔 scroll이 안됨.
